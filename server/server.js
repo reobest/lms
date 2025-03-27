@@ -13,6 +13,6 @@ connectToMongoDB()
 app.get('/',(req,res) => {
 res.send("api Success")
 })
-app.post('clerk',ClerkWebHooks)
+app.post('/clerk',ClerkWebHooks)
 app.listen(PORT,() => console.log(`Listening on port ${PORT}`))
  // sabdelrahman071  03gEYNNW5acZrDrP
