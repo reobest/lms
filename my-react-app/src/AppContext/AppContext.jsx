@@ -1,9 +1,12 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import humanizeDuration from 'humanize-duration'
+import {useUser,useAuth} from '@clerk/clerk-react'
 export const appContext = createContext();
 
 export const AppContextProvider = (props) => {
+    const {getToken} = useAuth()
+    const {user} = useUser()
     const [isSubsribed, setIsSubsribed] = useState(false)
     const [email, setEmail] = useState("")
     const navigate = useNavigate()
@@ -55,6 +58,18 @@ export const AppContextProvider = (props) => {
         chapter.chapterContent.map((lecture) => time+= lecture.lectureDuration)
         return humanizeDuration(time*60*1000,{units:["h","m"]})
     }
+    const getTokenn = async () => {
+        const token = await getToken()
+        console.log(token);
+        
+    }
+    useEffect(() => {
+      if(user){
+        getTokenn()
+      }
+    
+    }, [user])
+    
 
     const value = { navigate, averageRating, handleSubscribe, email, setEmail, 
         isSubsribed, setIsSubsribed ,TotalNumberOfLectures ,totalDurationTime ,totalChapterTime  }
