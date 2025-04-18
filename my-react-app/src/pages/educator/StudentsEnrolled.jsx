@@ -1,17 +1,32 @@
-import React, { useEffect, useState } from 'react'
-import { dummyStudentEnrolled } from '../../assets/assets/assets'
+import React, { useContext, useEffect, useState } from 'react'
 import Loading from '../../components/student/Loading'
+import { appContext } from '../../AppContext/AppContext'
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
 const StudentsEnrolled = () => {
+  const { getToken, backendUrl,isEducator } = useContext(appContext)
   const [studentEnrolled, setStudentEnrolled] = useState([])
-  useEffect(() => {
-    const fetchCources = () => {
-      setStudentEnrolled(dummyStudentEnrolled)
+  const fetchCources = async () => {
+    try {
+      const token = await getToken()
+      const { data } = await axios.get(backendUrl + '/api/educator/enrolled-students', { headers: { Authorization: `Bearer ${token}` } })
+      if(data.success){
+        setStudentEnrolled(data.enrolledStudents.reverse())
+      }else{
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
     }
-    fetchCources()
-  }, [])
+  }
+  useEffect(() => {
+    if(isEducator){
+      fetchCources()
+    } 
+  }, [isEducator])
   return studentEnrolled ? (
-    <div className='flex items-start p-8 my-[50px] overflow-x-scroll hide-scrollbar'>
+    <div className='min-h-screen flex items-start p-8 my-[50px] overflow-x-scroll hide-scrollbar'>
       <table className='w-4xl max-w-4xl mt-[50px]'>
         <thead>
           <tr className='border border-gray-400'>

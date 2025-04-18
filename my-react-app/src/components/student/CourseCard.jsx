@@ -5,11 +5,11 @@ import { appContext } from '../../AppContext/AppContext'
 const CourseCard = ({course}) => {
   const {averageRating}  = useContext(appContext)
   return (
-    <Link to={'/course/' + course._id} className={`border border-gray-500/20 rounded-md hover:scale-105 xs:w-[300px] sm:w-[265px]`}>
-      <img src={course.courseThumbnail} alt="course-thumbnail" className='xs:w-[300px] sm:w-[265px] rounded-t-md'/>
+    <Link to={'/course/' + course._id} onClick={() => scrollTo({ top: 0, behavior: "smooth" })} className={`border border-gray-500/20 rounded-md hover:scale-105 w-[350px]`}>
+      <img src={course.courseThumbnail} alt="course-thumbnail" className=' h-[200px] rounded-t-md'/>
       <div className='text-start px-2 mt-4'>
         <h3>{course.courseTitle}</h3>
-        <p className='text-gray-500'>{course.educator.name}</p>
+        <p className='text-gray-500'>{course?.educator?.name}</p>
         <div className='flex items-center gap-2'>
           <p className='text-[14px]'>{averageRating(course)}</p>
           <div className='flex'>

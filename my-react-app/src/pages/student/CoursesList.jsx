@@ -1,22 +1,22 @@
 import React, { useContext, useEffect, useState } from 'react'
 import Searchbar from '../../components/student/Searchbar'
-import { assets, dummyCourses } from '../../assets/assets/assets'
+import { assets } from '../../assets/assets/assets'
 import CourseCard from '../../components/student/CourseCard'
 import Footer from '../../components/student/Footer'
 import { appContext } from '../../AppContext/AppContext'
 import { useParams } from 'react-router-dom'
 const CoursesList = () => {
-  const {navigate} = useContext(appContext)
+  const {navigate,allCources} = useContext(appContext)
   const [courses, setCourses] = useState([])
   const { input } = useParams()
   useEffect(() => {
     if (input) {
-      const filteredCourses = dummyCourses.filter((course) => course.courseTitle.toLowerCase().includes(input.toLowerCase()))
+      const filteredCourses = allCources.filter((course) => course.courseTitle.toLowerCase().includes(input.toLowerCase()))
       setCourses(filteredCourses)
     } else {
-      setCourses(dummyCourses)
+      setCourses(allCources)
     }
-  }, [input])
+  }, [input,allCources])
   return (
     <div>
       <div className='flex flex-col gap-4 lg:gap-0 lg:flex-row items-center justify-between mt-[50px] px-[60px]'>

@@ -1,18 +1,37 @@
-import React, { useState } from 'react'
-import { assets, dummyDashboardData } from '../../assets/assets/assets'
+import React, { useContext, useState } from 'react'
+import { assets } from '../../assets/assets/assets'
 import { useEffect } from 'react'
 import Loading from '../../components/student/Loading'
+import { appContext } from '../../AppContext/AppContext'
+import axios from 'axios'
+import { toast } from 'react-toastify'
 const DashBoard = () => {
+  const { getToken, backendUrl, isEducator } = useContext(appContext)
   const [dashboradData, setDashboradData] = useState([])
-  useEffect(() => {
-    const fetchDashboradData = () => {
-      setDashboradData(dummyDashboardData)
+  const fetchDashboradData = async () => {
+    try {
+      const token = await getToken()
+      const { data } = await axios.get(backendUrl + '/api/educator/dashboard', { headers: { Authorization: `Bearer ${token}` } })
+      console.log(data);
+      if (data.success) {
+        setDashboradData(data.dashboardData)
+      } else {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
     }
-    fetchDashboradData()
-  }, [])
+  }
+
+  useEffect(() => {
+    if (isEducator) {
+      fetchDashboradData()
+    }
+  }, [isEducator])
+  
   const imagesData = [
     { img: assets.patients_icon, id: 0, name: dashboradData.enrolledStudentsData?.length || 0, title: "Total enrollments" },
-    { img: assets.appointments_icon, id: 1, name: dashboradData.totalCourses, title: "Total cources" },
+    { img: assets.appointments_icon, id: 1, name: dashboradData.totalCources, title: "Total cources" },
     { img: assets.earning_icon, id: 2, name: dashboradData.totalEarnings, title: "Total earnings" },
   ]
   return dashboradData ? (

@@ -28,7 +28,7 @@ export const ClerkWebHooks = async (req, res) => {
                 console.log(userData);
 
                 await User.create(userData)
-                res.json({})
+                 res.json({})
                 break;
             }
             case "user.updated": {
@@ -37,18 +37,24 @@ export const ClerkWebHooks = async (req, res) => {
                     email: data.email_addresses[0].email_address,
                     imageUrl: data.image_url,
                 }
-                await User.findByIdAndUpdate(data.id, userData)
-                res.json({})
+                const updated = await User.findByIdAndUpdate(data.id, userData)
+                console.log(updated);
+                
+                if(!updated){
+                    await User.create({ _id: data.id, ...userData });
+                }
+                 res.json({})
                 break;
             }
             case "user.deleted": {
                 await User.findByIdAndDelete(data.id, userData)
-                res.json({})
+                 res.json({})
                 break;
             }
         }
     } catch (error) {
-        res.json({ message: error.message })
+        console.error("Webhook Error:", error);
+        return res.json({ message: error.message })
     }
 }
 const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY)

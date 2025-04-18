@@ -11,9 +11,9 @@ export const updateRuleToEducator = async (req, res) => {
                 role: 'educator'
             }
         })
-        res.json({ message: "success" })
+        res.json({ success:true,message: "You can now post videos" })
     } catch (error) {
-        res.json({ message: error.message })
+        res.json({success:false, message: error.message })
     }
 }
 
@@ -31,27 +31,31 @@ export const addCourse = async (req, res) => {
         const imageUpload = await cloudinary.uploader.upload(imageFile.path)
         newCourse.courseThumbnail = imageUpload.secure_url
         await newCourse.save()
-        return res.json({ message: "New Course Added" })
+        return res.json({success:true, message: "New Course Added" })
     } catch (error) {
-        return res.json({ success: "false", message: error.message })
+        return res.json({ success: false, message: error.message })
     }
 }
 export const getEducatorCources = async (req, res) => {
     try {
         const educator = req.auth.userId
         const courses = await Course.find({ educator })
-        res.json({ courses })
+        res.json({ success:true,courses })
     } catch (error) {
-        return res.json({ success: "false", message: error.message })
+        return res.json({ success: false, message: error.message })
     }
 }
 
 export const educatorDashboardData = async (req, res) => {
     try {
         const educator = req.auth.userId
+        console.log(educator);
+        
         const courses = await Course.find({ educator })
+        console.log(courses);
+        
         const totalCources = courses.length
-        const courseIds = totalCources.map(course => course._id)
+        const courseIds = courses.map(course => course._id)
         const purchases = await Purchase.find({
             courseId: { $in: courseIds },
             status: 'completed'
@@ -70,12 +74,12 @@ export const educatorDashboardData = async (req, res) => {
             })
         }
         res.json({
-            success: "True", dashboardData: {
+            success: true, dashboardData: {
                 totalEarnings, enrolledStudentsData, totalCources
             }
         })
     } catch (error) {
-        return res.json({ success: "false", message: error.message })
+        return res.json({ success: false, message: error.message })
     }
 }
 
@@ -93,8 +97,8 @@ export const getEnrolledStudentsData = async (req, res) => {
             courseTitle: purchase.courseId.courseTitle,
             purchaseData: purchase.createdAt
         }))
-        res.json({ success: "True", enrolledStudents })
+        res.json({ success: true, enrolledStudents })
     } catch (error) {
-        return res.json({ success: "false", message: error.message })
+        return res.json({ success: false, message: error.message })
     }
 }

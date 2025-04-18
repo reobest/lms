@@ -1,9 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import Quill from 'quill';
 import { assets } from '../../assets/assets/assets';
 import uniqid from 'uniqid'
 import { Link } from 'react-router-dom'
+import { toast } from 'react-toastify';
+import { appContext } from '../../AppContext/AppContext';
+import axios from 'axios';
 const AddCourse = () => {
+  const { getToken, backendUrl } = useContext(appContext)
   const [addChapter, setAddChapter] = useState(false)
   const [lecturePopUp, setLecturePopUp] = useState(false)
   const [image, setImage] = useState("")
@@ -18,7 +22,7 @@ const AddCourse = () => {
   const [lectureDetails, setLectureDetails] = useState({
     lectureTitle: "",
     lectureDuration: "",
-    lectureURL: "",
+    lectureUrl: "",
     isPreviewFree: false,
   })
   const [chapter, setChapter] = useState([])
@@ -68,7 +72,7 @@ const AddCourse = () => {
     setLectureDetails({
       lectureTitle: "",
       lectureDuration: "",
-      lectureURL: "",
+      lectureUrl: "",
       isPreviewFree: false,
     })
   }
@@ -100,12 +104,46 @@ const AddCourse = () => {
       });
     }
   }, [])
+  const handleSubmit = async (e) => {
+    try {
+      e.preventDefault()
+      if(!image){
+        toast.error('Thumbnail missing')
+      }
+      const courseData = {
+        courseTitle:title,
+        courseDescription:quillInstance.current.root.innerHTML,
+        coursePrice:Number(coursePrice),
+        discount:Number(discount),
+        courseContent:chapter
+      }
+      const formData = new FormData()
+      formData.append('courseData',JSON.stringify(courseData))
+      formData.append('image',image)
+      const token  =  await getToken()
+      const {data} = await axios.post(backendUrl + '/api/educator/add-course',formData,{headers:{Authorization:`Bearer ${token}`}})
+      if(data.success){
+        toast.success(data.message)
+        setTitle('')
+        setCoursePrice(0)
+        setDiscount(0)
+        setImage(null)
+        setChapter([])
+        quillInstance.current.root.innerHTML = ''
+      }else{
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
+      
+    }
+  }
   useEffect(() => {
     console.log("Updated Chapters:", chapter);
   }, [chapter]);
   return (
     <div>
-      <form className='flex items-start flex-col p-8 gap-6'>
+      <form className='flex items-start flex-col p-8 gap-6' onSubmit={(e) => handleSubmit(e)}>
         <div className='flex flex-col gap-2'>
           <label htmlFor="title" className='text-gray-500 text-md'>
             Course title
@@ -163,7 +201,7 @@ const AddCourse = () => {
                   <p className='text-gray-500 flex items-center text-[16px] font-ligh'>
                     <span>{index + 1}-{lecture.lectureTitle}-</span>
                     <span>{lecture.lectureDuration}-</span>
-                    <Link to={`/${lecture.lectureURL}`} className='text-blue-500'>Link-</Link>
+                    <Link to={`/${lecture.lectureUrl}`} className='text-blue-500'>Link-</Link>
                     <span className='text-blue-500'>{lecture.isPreviewFree ? 'Preview' : ''}</span>
                   </p>
                   <img src={assets.cross_icon} className='cursor-pointer' alt="cross-icon" onClick={() => handleDeleteLecture(chapt.chapterId, lecture.lectureId)} />
@@ -207,7 +245,7 @@ const AddCourse = () => {
                 <label htmlFor="url" className='text-gray-500 text-md'>
                   Lecture URL
                 </label>
-                <input type="text" id='url' placeholder='Type here' value={lectureDetails.lectureURL} onChange={(e) => setLectureDetails({ ...lectureDetails, lectureURL: e.target.value })}
+                <input type="text" id='url' placeholder='Type here' value={lectureDetails.lectureUrl} onChange={(e) => setLectureDetails({ ...lectureDetails, lectureUrl: e.target.value })}
                   className='outline-none border border-gray-500/70 rounded-md  h-[40px] pl-3' />
               </div>
               <div className='flex items-center gap-2 mt-[20px]'>
@@ -217,12 +255,12 @@ const AddCourse = () => {
                 <input type="checkbox" id='preview' placeholder='Type here' value={lectureDetails.isPreviewFree} onChange={(e) => setLectureDetails({ ...lectureDetails, isPreviewFree: e.target.checked })}
                   className='outline-none border border-gray-500/70 rounded-md  h-[20px] pl-3' />
               </div>
-              <button className='bg-blue-600 text-white h-[40px] mt-[40px] hover:bg-blue-500' onClick={handleSubmitLectures}>Add</button>
+              <button type='submit' className='bg-blue-600 text-white h-[40px] mt-[40px] hover:bg-blue-500' onClick={handleSubmitLectures}>Add</button>
             </div>
           </div>
         )
         }
-        <button className='w-[90px] h-[40px] bg-black text-white'>ADD</button>
+        <button type='submit' className='w-[90px] h-[40px] bg-black text-white'>ADD</button>
       </form>
 
     </div>
