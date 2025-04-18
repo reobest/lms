@@ -28,7 +28,7 @@ const CoursesList = () => {
       </div>
       {input && <p className='ml-[8vw] mt-[50px] flex items-center gap-2 text-gray-500 text-[15px]'>{input} 
             <img src={assets.cross_icon} alt="crosicon" className='w-[10px] h-[10px] cursor-pointer' onClick={() => navigate('/course-list')} /></p>}
-      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 justify-items-center mt-[50px] gap-8 px-[100px]'>
+      <div className='flex flex-wrap items-center justify-center  mt-[50px] gap-4 px-[100px]'>
         {courses && courses.map((course, index) => <CourseCard key={index} course={course} />)}
       </div>
       <Footer />
