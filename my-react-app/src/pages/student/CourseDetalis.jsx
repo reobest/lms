@@ -66,7 +66,7 @@ const CourseDetalis = () => {
 
   useEffect(() => {
     fetchCourseData()
-  }, [])
+  }, [id])
   useEffect(() => {
     if (userData && course) {
       setIsAlreadyEnrolled(userData?.enrolledCourses?.includes(course._id))
