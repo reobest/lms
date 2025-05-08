@@ -19,8 +19,8 @@ const CourseDetalis = () => {
   const { averageRating, TotalNumberOfLectures, totalDurationTime, totalChapterTime, backendUrl, userData, getToken } = useContext(appContext)
   const { user } = useUser()
   console.log(user);
-  
-  
+
+
 
   const handleSections = (index) => {
     setHideSections(prev => ({
@@ -156,7 +156,16 @@ const CourseDetalis = () => {
                 <span className='text-black'></span></div> |
               <div className='flex gap-2 text-gray-500'><img src={assets.lesson_icon} alt="lesson" />{TotalNumberOfLectures(course)}</div>
             </div>
-            {course.educator._id === user.id ?<></> : <button onClick={enrollCourse} className='h-[48px] w-[400px] lg:w-full text-white bg-[#4B7BFF] text-[16px] mt-[20px]'>{isAlreadyEnrolled ? 'Already enrolled' : 'Enroll now'}</button>}
+            {user && course.educator._id === user.id ? (
+              <></>
+            ) : (
+              <button
+                onClick={enrollCourse}
+                className="h-[48px] w-[400px] lg:w-full text-white bg-[#4B7BFF] text-[16px] mt-[20px]"
+              >
+                {isAlreadyEnrolled ? 'Already enrolled' : 'Enroll now'}
+              </button>
+            )}
             <h1 className='text-[18px] font-medium text-gray-800 mt-[20px]'>What’s in the course?</h1>
             <ul className='text-gray-500 flex flex-col mt-[10px]'>
               <li>. Lifetime access with free updates.</li>
